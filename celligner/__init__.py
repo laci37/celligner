@@ -223,7 +223,7 @@ class Celligner(object):
 
         return self
 
-    def transform(self, target_expr=None, compute_cPCs=True):
+    def transform(self, target_expr=None, compute_cPCs=True, debug_prefix=''):
         """
         Align samples in the target dataset to samples in the reference dataset
 
@@ -280,7 +280,7 @@ class Celligner(object):
                     for val in set(self.ref_clusters)
                 ]
             ).loc[self.ref_input.index]
-            centered_ref_input.to_csv("centered_ref.csv")
+            centered_ref_input.to_csv(f"{debug_prefix}centered_ref.csv")
 
             centered_target_input = pd.concat(
                 [
@@ -288,7 +288,7 @@ class Celligner(object):
                     for val in set(self.target_clusters)
                 ]
             ).loc[self.target_input.index]
-            centered_target_input.to_csv("centered_target.csv")
+            centered_target_input.to_csv(f"{debug_prefix}centered_target.csv")
 
             # Compute contrastive PCs
             print("Running cPCA..")
@@ -305,7 +305,6 @@ class Celligner(object):
                                .predict(self.cpca_loadings.T)
                                .T
                                )
-            transformed_ref.to_csv("transformed_ref.csv")
 
         # Using previously computed cPCs - for multi-dataset alignment
         else:
@@ -333,6 +332,7 @@ class Celligner(object):
 
             self.target_input = self.__checkExpression(target_expr, is_reference=False)
             transformed_ref = self.ref_input
+        transformed_ref.to_csv(f"{debug_prefix}transformed_ref.csv")
 
         # Only need to regress out of target dataset if using previously computed cPCs
         print("Regressing top cPCs out of target dataset..")
@@ -342,7 +342,7 @@ class Celligner(object):
                               .predict(self.cpca_loadings.T)
                               .T
                               )
-        transformed_target.to_csv("transformed_target.csv")
+        transformed_target.to_csv(f"{debug_prefix}transformed_target.csv")
 
         # Do MNN
         print("Doing the MNN analysis using Marioni et al. method..")
