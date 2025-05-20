@@ -359,7 +359,7 @@ class Celligner(object):
         if compute_cPCs:
             self.combined_output = pd.concat([target_corrected, transformed_ref])
         else:  # Append at the end for multi-dataset alignment case
-            self.combined_output = pd.concat([transformed_ref, target_corrected])
+            self.combined_output = pd.concat([self.combined_output, target_corrected])
 
         del target_corrected
         gc.collect()
